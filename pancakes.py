@@ -93,7 +93,7 @@ def guisetup(stack):
 
 def flip(gui, stack, p):
     '''Flip p pancakes in an ordered stack.'''
-    # print("Flipping", p, "pancakes" if p > 1 else "pancake")
+    print("Flipping", p, "pancakes" if p > 1 else "pancake")
 
     # Get graphics objects from GUI
     obj = gui.items
