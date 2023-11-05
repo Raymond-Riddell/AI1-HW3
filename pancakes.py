@@ -46,15 +46,14 @@ def guisetup(stack):
     margin = 40
     wid = margin * 2 + 30 * max(n + 1, 9)  # each successive pancake gets 30 px wider
     hei = margin * 2 + n * thickness  # top/bottom margins of 40 px + 12 px per pancake
-    gui = GraphWin("Pancakes", wid, hei)
-
     cx = wid / 2  # center of width
-    # cmap = cm.get_cmap('YlOrBr', n + 1)
+    gui = GraphWin("Pancakes", wid, hei)
+    cmap = cm.get_cmap('YlOrBr', n + 1)
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
 
-    draw_pancakes(gui, stack, n, wid, thickness)
+    draw_pancakes(gui, stack, n)
 
     # Add text objects for instructions and status updates
     instructions = Text(Point(10, hei - 12), "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit")
@@ -81,6 +80,17 @@ def flip(gui, stack, p):
 
     # Update status text on GUI
     status.setText(f"Flipping {p} pancake{'s' if p > 1 else ''}")
+
+    temp = []
+    for i in range(p):
+        temp.insert(0, stack.pop(0))
+
+    for i in range(len(temp)):
+        stack.insert(0, temp.pop())
+
+        draw_pancakes(gui, stack, len(stack))
+
+
 
     # Move pancakes around in the GUI
     # ***ENTER CODE HERE*** (5 lines)
@@ -131,11 +141,16 @@ def simulate(stack, path):
 
     return fakestack
 
-def draw_pancakes(gui, stack, n, wid, thickness):
+def draw_pancakes(gui, stack, n):
 
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
+
+    thickness = 12  # thickness of each pancake, in pixels
+    margin = 40
+    wid = margin * 2 + 30 * max(n + 1, 9)  # each successive pancake gets 30 px wider
+    hei = margin * 2 + n * thickness  # top/bottom margins of 40 px + 12 px per pancake
     pan_x_coefficient = 15 
     pancake_list = [[x, -1] for x in range(0, n)]
     for pan in range(n):
