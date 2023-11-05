@@ -49,11 +49,10 @@ def guisetup(stack):
     gui = GraphWin("Pancakes", wid, hei)
 
     cx = wid / 2  # center of width
-    cmap = cm.get_cmap('YlOrBr', n + 1)
+    # cmap = cm.get_cmap('YlOrBr', n + 1)
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
-    pan_start = 0 
     pan_x_coefficient = 15 
     pancake_list = [[x, -1] for x in range(0, n)]
     for pan in range(n):
@@ -65,23 +64,30 @@ def guisetup(stack):
         x_comp = pan_x_coefficient + 15
         pan_x_coefficient += 15
 
-        pan_start += 12
-        y_comp = pan_start + 40
+        
+        # pan_start += 12
+        # y_comp = pan_start + 40
 
         # make line object (the actual pancake)
-        pancake = Line(Point(-x_comp + mid, y_comp), Point(x_comp + mid, y_comp))
+
+        pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
         pancake.setWidth(thickness)
         pancake_list[pan][1] = pancake 
 
     pancake_map = dict()
     for tup in pancake_list:
         pancake_map[tup[0]] = tup[1]
-    pdb.set_trace()
 
+    pan_start = 0
     for pan in stack:
-        pancake_map[pan].draw(gui)
+        pan_start += 12
+        y_comp = pan_start + 40
+        pancake = pancake_map[pan]
+        pancake.move(0, y_comp)
+        pancake.draw(gui)
+
         # pancake.draw(gui)
-        
+
 
     # width = height of win // n pancakes
     # length of pancake = 
