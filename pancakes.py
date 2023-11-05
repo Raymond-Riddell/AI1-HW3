@@ -55,6 +55,7 @@ def guisetup(stack):
     # ***ENTER CODE HERE*** (10 lines)
     pan_start = 0 
     pan_x_coefficient = 15 
+    pancake_list = [[x, -1] for x in range(0, n)]
     for pan in range(n):
 
         # find midpoint of board
@@ -70,8 +71,16 @@ def guisetup(stack):
         # make line object (the actual pancake)
         pancake = Line(Point(-x_comp + mid, y_comp), Point(x_comp + mid, y_comp))
         pancake.setWidth(thickness)
-        pancake.setFill("#FFFFFF")
-        pancake.draw(gui)
+        pancake_list[pan][1] = pancake 
+
+    pancake_map = dict()
+    for tup in pancake_list:
+        pancake_map[tup[0]] = tup[1]
+    pdb.set_trace()
+
+    for pan in stack:
+        pancake_map[pan].draw(gui)
+        # pancake.draw(gui)
         
 
     # width = height of win // n pancakes
