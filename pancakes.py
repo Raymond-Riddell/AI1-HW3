@@ -54,30 +54,28 @@ def guisetup(stack):
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
     pan_start = 0 
+    pan_x_coefficient = 15 
     for pan in range(n):
 
         # find midpoint of board
         mid = wid // 2
 
         # find x components 
-        x_comp = mid - (30 //2)
+        x_comp = pan_x_coefficient + 15
+        pan_x_coefficient += 15
 
-        pan_start += 20
-        y_comp = pan_start + thickness
+        pan_start += 12
+        y_comp = pan_start + 40
 
         # make line object (the actual pancake)
-        pancake = Line(Point(-x_comp, y_comp), Point(x_comp, y_comp))
+        pancake = Line(Point(-x_comp + mid, y_comp), Point(x_comp + mid, y_comp))
         pancake.setWidth(thickness)
+        pancake.setFill("")
         pancake.draw(gui)
-        pdb.set_trace()
         
 
     # width = height of win // n pancakes
     # length of pancake = 
-    myLine = Line(Point(0,0), Point(100,50)) 
-    myLine.setWidth(thickness)
-    myLine.draw(gui)
-
 
     # Add text objects for instructions and status updates
     instructions = Text(Point(10, hei - 12), "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit")
