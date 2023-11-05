@@ -53,35 +53,8 @@ def guisetup(stack):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
-    pan_x_coefficient = 15 
-    pancake_list = [[x, -1] for x in range(0, n)]
-    for pan in range(n):
 
-        # find midpoint of board
-        mid = wid // 2
-
-        # find x components 
-        x_comp = pan_x_coefficient + 15
-        pan_x_coefficient += 15
-
-        # make line object (the actual pancake)
-        pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
-        pancake.setWidth(thickness)
-        pancake_list[pan][1] = pancake 
-
-    pancake_map = dict()
-    for tup in pancake_list:
-        pancake_map[tup[0]] = tup[1]
-
-    pan_start = 0
-    for pan in stack:
-        pan_start += 12
-        y_comp = pan_start + 40
-        pancake = pancake_map[pan]
-        pancake.move(0, y_comp)
-        pancake.draw(gui)
-
-        # pancake.draw(gui)
+    draw_pancakes(gui, stack, n, wid, thickness)
 
     # Add text objects for instructions and status updates
     instructions = Text(Point(10, hei - 12), "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit")
@@ -158,7 +131,7 @@ def simulate(stack, path):
 
     return fakestack
 
-def draw_gui(gui, stack):
+def draw_pancakes(gui, stack, n, wid, thickness):
 
 
     # Draw pancakes
