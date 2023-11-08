@@ -79,7 +79,7 @@ def flip(gui, stack, p):
     status = obj[-1]
 
     # Update status text on GUI
-    status.setText(f"Flipping {p} pancake{'s' if p > 1 else ''}")
+    # status.setText(f"Flipping {p} pancake{'s' if p > 1 else ''}")
 
     temp = []
     for i in range(p):
@@ -88,7 +88,7 @@ def flip(gui, stack, p):
     for i in range(len(temp)):
         stack.insert(0, temp.pop())
 
-        draw_pancakes(gui, stack, len(stack))
+    draw_pancakes(gui, stack, len(stack))
 
 
 
@@ -146,6 +146,9 @@ def draw_pancakes(gui, stack, n):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
+    old_lines = gui.items[0: n - 1]
+    for line in old_lines:
+        line.undraw()
 
     thickness = 12  # thickness of each pancake, in pixels
     margin = 40
