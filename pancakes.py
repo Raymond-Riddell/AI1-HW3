@@ -73,14 +73,15 @@ def flip(gui, stack, p):
     '''Flip p pancakes in an ordered stack.'''
     print("Flipping", p, "pancakes" if p > 1 else "pancake")
 
+    print("Before change\n")
+    print(*stack, sep='\n')
+
     # Get graphics objects from GUI
-    obj = gui.items
-    pancakes = obj[:-2]
-    status = obj[-1]
+    # obj = gui.items
+
 
     # Update status text on GUI
     # status.setText(f"Flipping {p} pancake{'s' if p > 1 else ''}")
-
     temp = []
     for i in range(p):
         temp.insert(0, stack.pop(0))
@@ -89,7 +90,8 @@ def flip(gui, stack, p):
         stack.insert(0, temp.pop())
 
     draw_pancakes(gui, stack, len(stack))
-
+    print("After change\n")
+    print(*stack, sep='\n')
 
 
     # Move pancakes around in the GUI
@@ -106,6 +108,9 @@ def cost(stack):
     Here, we define cost as the number of pancakes in the wrong position.'''
     # ***MODIFY CODE HERE*** (2 lines)
     h = 0
+    lst = [a for a in range(len(stack))]
+    for i in range(len(stack)):
+        h += 1 if lst[i] == stack[i] else 0
     return h
 
 def gbfs(gui, stack):
@@ -146,7 +151,7 @@ def draw_pancakes(gui, stack, n):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
-    old_lines = gui.items[0: n - 1]
+    old_lines = [obj for obj in gui.items if type(obj) == Line]
     for line in old_lines:
         line.undraw()
 
@@ -155,7 +160,7 @@ def draw_pancakes(gui, stack, n):
     wid = margin * 2 + 30 * max(n + 1, 9)  # each successive pancake gets 30 px wider
     hei = margin * 2 + n * thickness  # top/bottom margins of 40 px + 12 px per pancake
     pan_x_coefficient = 15 
-    pancake_list = [[x, -1] for x in range(0, n)]
+    pancake_list = [[x, None] for x in range(n)]
     for pan in range(n):
 
         # find midpoint of board
@@ -168,7 +173,7 @@ def draw_pancakes(gui, stack, n):
         # make line object (the actual pancake)
         pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
         pancake.setWidth(thickness)
-        pancake_list[pan][1] = pancake 
+        pancake_list[pan][1] = pancake
 
     pancake_map = dict()
     for tup in pancake_list:
