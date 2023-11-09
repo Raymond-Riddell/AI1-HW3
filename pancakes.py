@@ -35,7 +35,7 @@ def main(args):
             elif key == 'g':  # run greedy best-first search
                 path = gbfs(gui, stack)
             elif key in [str(i) for i in range(1, n + 1)]:  # manually flip some of the pancakes
-                flip(gui, stack, int(key))
+                stack = flip(gui, stack, int(key))
 
     gui.close()
 
@@ -76,15 +76,18 @@ def flip(gui, stack, p, update_gui=True):
     stack = flip_stack(stack, p)
     if update_gui:
         draw_pancakes(gui, stack, len(stack))
+    return stack
 
 def flip_stack(stack, p):
     temp = []
+
+    stack_copy = stack.copy()
     for i in range(p):
-        temp.insert(0, stack.pop(0))
+        temp.insert(0, stack_copy.pop(0))
 
     for i in range(len(temp)):
-        stack.insert(0, temp.pop())
-    return stack.copy()
+        stack_copy.insert(0, temp.pop())
+    return stack_copy
 
 
     # Move pancakes around in the GUI
@@ -96,7 +99,7 @@ def flip_stack(stack, p):
 
     return stack
 
-def cost(stack):
+def calc_cost(stack):
     '''Compute the cost h(stack) for a given stack of pancakes.
     Here, we define cost as the number of pancakes in the wrong position.'''
     # ***MODIFY CODE HERE*** (2 lines)
@@ -111,32 +114,60 @@ def gbfs(gui, stack):
     print("Running greedy best-first search...")
 
     # Get graphics objects from GUI
-   # obj = [obj for obj in gui.items if type(obj) == Line] 
-   # pancakes = obj[:-2]
-   # status = obj[-1]
+    objects = gui.items
+    status = None
+    for obj in objects:
+        if type(obj) == Text and obj.getText() != "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit":
+            status = obj
+            break
+
 
     # Update status text on GUI
     status.setText(f"Running greedy best-first search...")
     time.sleep(0.5)
 
     # ***MODIFY CODE HERE*** (20-25 lines)
-    cnt = 0
+    path  = search(stack, "", calc_cost(stack), 0)
     
 
+    cnt = 0
     print(f'searched {cnt} paths')
     print('solution:', '')
+    print(path)
     status.setText("...search is complete")
 
 
 def search(state, path, cost, count):
     
-    # find the children
+    if cost == 0:
+        # return [path, count]
+        return path
+
     children = []
+    costs = []
+    
+    # find the children
     for i in range( 2, len(state) + 1):
-        children.append(flip(state, i))
+        children.append(flip_stack(stack=state, p=i))
+
+    # find the children's costs
+    for i in range(len(children)):
+        costs.append(calc_cost(children[i]))
 
 
-    pass
+    # find the child with the smallest cost
+    min_idx = 0
+    for i in range(len(costs)):
+        if costs[i] < costs[min_idx]:
+            min_idx = i
+
+    # add 2 to the min idx to get the number of pancakes that were fliped on this move 
+    # adding two makes up for the offset we impose by skipping moves that flip less than two pancakes
+    print(count)
+    return search(children[min_idx], path + str(min_idx + 2), costs[min_idx], count + 1)
+
+
+
 
 
 def find_children(state):
