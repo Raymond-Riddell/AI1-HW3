@@ -69,29 +69,22 @@ def guisetup(stack):
     # Return gui object
     return gui
 
-def flip(gui, stack, p):
+def flip(gui, stack, p, update_gui=True):
     '''Flip p pancakes in an ordered stack.'''
     print("Flipping", p, "pancakes" if p > 1 else "pancake")
 
-    print("Before change\n")
-    print(*stack, sep='\n')
+    stack = flip_stack(stack, p)
+    if update_gui:
+        draw_pancakes(gui, stack, len(stack))
 
-    # Get graphics objects from GUI
-    # obj = gui.items
-
-
-    # Update status text on GUI
-    # status.setText(f"Flipping {p} pancake{'s' if p > 1 else ''}")
+def flip_stack(stack, p):
     temp = []
     for i in range(p):
         temp.insert(0, stack.pop(0))
 
     for i in range(len(temp)):
         stack.insert(0, temp.pop())
-
-    draw_pancakes(gui, stack, len(stack))
-    print("After change\n")
-    print(*stack, sep='\n')
+    return stack.copy()
 
 
     # Move pancakes around in the GUI
@@ -110,7 +103,7 @@ def cost(stack):
     h = 0
     lst = [a for a in range(len(stack))]
     for i in range(len(stack)):
-        h += 1 if lst[i] == stack[i] else 0
+        h += 1 if lst[i] != stack[i] else 0
     return h
 
 def gbfs(gui, stack):
@@ -118,9 +111,9 @@ def gbfs(gui, stack):
     print("Running greedy best-first search...")
 
     # Get graphics objects from GUI
-    obj = gui.items
-    pancakes = obj[:-2]
-    status = obj[-1]
+   # obj = [obj for obj in gui.items if type(obj) == Line] 
+   # pancakes = obj[:-2]
+   # status = obj[-1]
 
     # Update status text on GUI
     status.setText(f"Running greedy best-first search...")
@@ -128,11 +121,29 @@ def gbfs(gui, stack):
 
     # ***MODIFY CODE HERE*** (20-25 lines)
     cnt = 0
+    
 
     print(f'searched {cnt} paths')
     print('solution:', '')
     status.setText("...search is complete")
 
+
+def search(state, path, cost, count):
+    
+    # find the children
+    children = []
+    for i in range( 2, len(state) + 1):
+        children.append(flip(state, i))
+
+
+    pass
+
+
+def find_children(state):
+
+    children = []
+
+    pass
 def simulate(stack, path):
     '''Simulate the flipping of pancakes to determine the resulting stack.'''
     fakestack = stack.copy()  # make a copy so we don't actually change the real stack
