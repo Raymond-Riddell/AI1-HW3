@@ -9,6 +9,7 @@ import pdb
 from queue import PriorityQueue
 import random
 import time
+from collections import deque
 
 parser = argparse.ArgumentParser(description="Use greedy best-first search (GBFS) to optimally flip a stack of pancakes")
 parser.add_argument('-n', '--num', metavar='pancakes', type=int, help="number of pancakes", default=8)
@@ -138,31 +139,52 @@ def gbfs(gui, stack):
 
 
 def search(state, path, cost, count):
+
+    initial_state = state.copy()
     
-    if cost == 0:
-        # return [path, count]
-        return path
+    # in --> [] out -->
+    queue = deque([state.copy()])
+    path = ""
+    count = 0
+    backpointers = dict()
+    visited = []
 
-    children = []
-    costs = []
-    
-    # find the children
-    for i in range( 2, len(state) + 1):
-        children.append(flip_stack(stack=state, p=i))
+    while True:
+        count += 1
 
-    # find the children's costs
-    for i in range(len(children)):
-        costs.append(calc_cost(children[i]))
+        node = queue.pop()
+        if calc_cost(node) == 0:
+            return path
+
+        moves = [a for a in range(2, len(state) + 1)]
+        children = []
+
+        for move in moves:
+            child = flip_stack(node.copy(), move)
+
+            if child not in visited:
+                queue.appendleft(child)
+                visited.append(child)
 
 
-    # find the child with the smallest cost
-    min_idx = 0
-    for i in range(len(costs)):
-        if costs[i] < costs[min_idx]:
-            min_idx = i
+        # sort the queue
+        temp_queue = list(queue).copy()
 
-    # add 2 to the min idx to get the number of pancakes that were fliped on this move 
-    # adding two makes up for the offset we impose by skipping moves that flip less than two pancakes
+        for i in range(len(temp_queue)):
+            for j in range(len(temp_queue) - 1):
+                if calc_cost(temp_queue[j]) < calc_cost(temp_queue[j + 1]):
+                    temp_val = temp_queue[j]
+                    temp_queue[j] = temp_queue[j+1]
+                    temp_queue[j+1] = temp_val
+        queue.clear()
+        queue = deque(temp_queue)
+        
+
+        print(count)
+
+
+
+
     print(count)
     return search(children[min_idx], path + str(min_idx + 2), costs[min_idx], count + 1)
 
