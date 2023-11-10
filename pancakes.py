@@ -133,8 +133,7 @@ def gbfs(gui, stack):
 
     cnt = 0
     print(f'searched {cnt} paths')
-    print('solution:', '')
-    print(path)
+    print(f'solution:', '{path}')
     status.setText("...search is complete")
 
 
@@ -154,6 +153,15 @@ def search(state, path, cost, count):
 
         node = queue.pop()
         if calc_cost(node) == 0:
+
+            path = ""
+            parent = backpointers[node]
+            while parent != initial_state:
+                child = backpointers[parent]
+                move = find_moves(child, parent)
+                path += str(move)
+                parent = backpointers[parent]
+
             return path
 
         moves = [a for a in range(2, len(state) + 1)]
@@ -165,6 +173,7 @@ def search(state, path, cost, count):
             if child not in visited:
                 queue.appendleft(child)
                 visited.append(child)
+                backpointers[child] = node
 
 
         # sort the queue
@@ -251,6 +260,27 @@ def draw_pancakes(gui, stack, n):
         pancake.move(0, y_comp)
         pancake.draw(gui)
 
+
+def find_moves(state1, state2):
+    count_same = 0
+    i = len(state1) - 1
+
+    if state1 == state2:
+        return 0
+
+    while state1[i] == state2[i]:
+        count_same += 1
+        i -= 1
+
+    return len(state1) - i
+        
+
+
+def make_path(backpointers, goal_state):
+    
+    path = ""
+
+    # find parent of goal state 
 
 
 if __name__ == "__main__":
