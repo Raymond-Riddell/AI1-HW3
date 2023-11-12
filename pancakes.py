@@ -49,7 +49,6 @@ def guisetup(stack):
     hei = margin * 2 + n * thickness  # top/bottom margins of 40 px + 12 px per pancake
     cx = wid / 2  # center of width
     gui = GraphWin("Pancakes", wid, hei)
-    cmap = cm.get_cmap('YlOrBr', n + 1)
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
@@ -224,6 +223,8 @@ def draw_pancakes(gui, stack, n):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
+    cmap = cm.get_cmap('YlOrBr', n + 1)
+    colors = [cmap.__call__(i) for i in range(n)]
     old_lines = [obj for obj in gui.items if type(obj) == Line]
     for line in old_lines:
         line.undraw()
@@ -245,6 +246,7 @@ def draw_pancakes(gui, stack, n):
 
         # make line object (the actual pancake)
         pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
+        pancake.setFill(color_rgb(*[int(a*100) for a in colors[pan][:-1]]))
         pancake.setWidth(thickness)
         pancake_list[pan][1] = pancake
 
