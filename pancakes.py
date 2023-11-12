@@ -246,7 +246,7 @@ def draw_pancakes(gui, stack, n):
 
         # make line object (the actual pancake)
         pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
-        pancake.setFill(color_rgb(*[int(a*100) for a in colors[pan][:-1]]))
+        pancake.setFill(color_rgb(*[int(a*100)*2 for a in colors[pan][:-1]]))
         pancake.setWidth(thickness)
         pancake_list[pan][1] = pancake
 
