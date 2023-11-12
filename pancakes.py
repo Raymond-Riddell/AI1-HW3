@@ -127,12 +127,11 @@ def gbfs(gui, stack):
     time.sleep(0.5)
 
     # ***MODIFY CODE HERE*** (20-25 lines)
-    path  = search(stack, "", calc_cost(stack), 0)
+    path, cnt  = search(stack, "", calc_cost(stack), 0)
     
 
-    cnt = 0
     print(f'searched {cnt} paths')
-    print(f'solution:', '{path}')
+    print(f'solution: {path}')
     status.setText("...search is complete")
 
 
@@ -141,63 +140,55 @@ def search(state, path, cost, count):
     initial_state = state.copy()
     
     # in --> [] out -->
-    queue = deque([state.copy()])
     path = ""
-    count = 0
+    cnt = 0
     backpointers = dict()
-    visited = []
+    id = 0
+    visited = {id:state.copy()} # {id : stack} a look up table for all vistited states
+
+    # queue consists of ids corresponding to state, and a cost associated with the h(state)
+    queue = deque([[id, calc_cost(visited[id])]])  # items are [id(), h(state)]
+    id += 1
 
     while True:
-        count += 1
+        cnt += 1
 
-        node = queue.pop()
-        if calc_cost(node) == 0:
+        node_id, node_cost = queue.pop()
+        node = visited[node_id].copy() # node is a stack of pancakes (integers), and represents the current state
+        if node_cost == 0:
 
             path = ""
-            parent = backpointers[node]
+            parent_id = backpointers[node_id]
+            parent = visited[parent_id]
+            path += str(find_move(node, parent))
             while parent != initial_state:
-                child = backpointers[parent]
-                move = find_moves(child, parent)
+                child_id = backpointers[parent_id]
+                child = visited[child_id]
+                move = find_move(child, parent)
                 path += str(move)
-                parent = backpointers[parent]
+                parent_id = backpointers[parent]
+                parent = visited[parent_id]
 
-            return path
+            return path, cnt
 
-        moves = [a for a in range(2, len(state) + 1)]
-        children = []
+        moves = [a for a in range(2, len(node) + 1)]
 
         for move in moves:
             child = flip_stack(node.copy(), move)
+            child_cost = calc_cost(child)
 
-            if child not in visited:
-                queue.appendleft(child)
-                visited.append(child)
-                backpointers[child] = node
+            if child not in visited.values():
+                child_id = id
+                id += 1
+                queue.appendleft([child_id, child_cost])
+                visited[child_id] = child
+                backpointers[child_id] = node_id
 
 
         # sort the queue
-        temp_queue = list(queue).copy()
+        queue = deque(sorted(queue, key=lambda pair : pair[1], reverse=True))
 
-        for i in range(len(temp_queue)):
-            for j in range(len(temp_queue) - 1):
-                if calc_cost(temp_queue[j]) < calc_cost(temp_queue[j + 1]):
-                    temp_val = temp_queue[j]
-                    temp_queue[j] = temp_queue[j+1]
-                    temp_queue[j+1] = temp_val
-        queue.clear()
-        queue = deque(temp_queue)
-        
-
-        print(count)
-
-
-
-
-    print(count)
-    return search(children[min_idx], path + str(min_idx + 2), costs[min_idx], count + 1)
-
-
-
+        print(cnt)
 
 
 def find_children(state):
@@ -263,7 +254,8 @@ def draw_pancakes(gui, stack, n):
         pancake.draw(gui)
 
 
-def find_moves(state1, state2):
+def find_move(state1, state2):
+    '''Looks at two board states, and determines how many pancakes need to be flipped to produce the other state'''
     count_same = 0
     i = len(state1) - 1
 
@@ -274,7 +266,7 @@ def find_moves(state1, state2):
         count_same += 1
         i -= 1
 
-    return len(state1) - i
+    return len(state1) - count_same
         
 
 
