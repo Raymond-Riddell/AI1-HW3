@@ -145,6 +145,7 @@ def search(state, path, cost, count):
     backpointers = dict()
     id = 0
     visited = {id:state.copy()} # {id : stack} a look up table for all vistited states
+    solved_state = [a for a in range(len(initial_state))]
 
     # queue consists of ids corresponding to state, and a cost associated with the h(state)
     queue = deque([[id, calc_cost(visited[id])]])  # items are [id(), h(state)]
@@ -158,16 +159,13 @@ def search(state, path, cost, count):
         if node_cost == 0:
 
             path = ""
-            parent_id = backpointers[node_id]
-            parent = visited[parent_id]
-            path += str(find_move(node, parent))
-            while parent != initial_state:
-                child_id = backpointers[parent_id]
-                child = visited[child_id]
-                move = find_move(child, parent)
-                path += str(move)
-                parent_id = backpointers[parent]
+            while node != initial_state:
+                parent_id = backpointers[node_id]
                 parent = visited[parent_id]
+                move = find_move(node, parent)
+                path += str(move)
+                node_id = parent_id
+                node = parent
 
             return path, cnt
 
@@ -237,7 +235,7 @@ def draw_pancakes(gui, stack, n):
 
         # make line object (the actual pancake)
         pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
-        pancake.setFill(color_rgb(*[int(a*100)*2 for a in colors[pan][:-1]]))
+        pancake.setFill(color_rgb(*[int(a*255) for a in colors[pan][:-1]]))
         pancake.setWidth(thickness)
         pancake_list[pan][1] = pancake
 
