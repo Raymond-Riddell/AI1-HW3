@@ -33,12 +33,14 @@ def main(args):
     colors_list = list(read_file(args.state)[0])
     for i in range(6):
         side = [i] * params['n'] ** 2
-        pdb.set_trace()
 
         for j in range(len(side)):
             side[j] = colors_list[color_idx]
             color_idx += 1
-        current_state.append(side)
+        
+        for e in side:
+            current_state.append(int(e))
+    pdb.set_trace()
 
     # ***DO NOT MODIFY THE FOLLOWING 2 LINES***
     initial_state = current_state.copy()  # for resetting the cube
