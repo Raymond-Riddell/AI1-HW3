@@ -186,8 +186,6 @@ def search(state, path, cost, count):
         # sort the queue
         queue = deque(sorted(queue, key=lambda pair : pair[1], reverse=True))
 
-        print(cnt)
-
 
 def find_children(state):
 

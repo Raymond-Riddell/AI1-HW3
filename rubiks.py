@@ -2,6 +2,7 @@
 # Solve a 3x3 Rubik's cube using A* search.
 
 import argparse
+from re import L
 from graphics import *
 import pdb
 from queue import PriorityQueue
@@ -28,8 +29,16 @@ def main(args):
     # cube, but rather the colors of the initial state.
     # ***MODIFY CODE HERE*** (7 lines)
     current_state = []
+    color_idx = 0
+    colors_list = list(read_file(args.state)[0])
     for i in range(6):
-        current_state += [i] * params['n'] ** 2
+        side = [i] * params['n'] ** 2
+        pdb.set_trace()
+
+        for j in range(len(side)):
+            side[j] = colors_list[color_idx]
+            color_idx += 1
+        current_state.append(side)
 
     # ***DO NOT MODIFY THE FOLLOWING 2 LINES***
     initial_state = current_state.copy()  # for resetting the cube
@@ -237,6 +246,11 @@ def simulate(state, node):
     # ***ENTER CODE HERE***  (4 lines)
 
     return s
+
+def read_file(file_name):
+
+    with open(file_name, 'r') as file:
+        return file.readlines()
 
 if __name__ == '__main__':
     main(parser.parse_args())
