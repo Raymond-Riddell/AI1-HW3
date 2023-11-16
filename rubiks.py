@@ -48,6 +48,10 @@ def main(args):
         for i in range(6):
             current_state += [i] * params['n'] ** 2
 
+    solved_state = []
+    for i in range(6):
+        solved_state += [i] * params['n'] ** 2
+
     # ***DO NOT MODIFY THE FOLLOWING 2 LINES***
     initial_state = current_state.copy()  # for resetting the cube
     previous_state = current_state.copy()  # for undoing user actions
@@ -104,7 +108,8 @@ def main(args):
 
             elif key == 'a':
                 # Solve the cube using A* search
-                path = astar(current_state)
+                path = astar(current_state, params, solved_state)
+                print(path)
 
             elif key == 'h':
                 # Print the current heuristic cost
@@ -112,11 +117,38 @@ def main(args):
 
     gui.close()
 
-def astar(state, verbose=False):
+def astar(state, params, solved_state, verbose=False):
     '''Run A* search on the cube based on its current state and return the solution path.'''
     print('Running A* search...')
     # ***ENTER CODE HERE*** (20-25 lines)
     cnt = 0
+
+    priority = "udlrbfUDLRBF"
+    starting_node = priority[0]
+    queue = [[cost(starting_node, simulate(solved_state, starting_node)), starting_node]] # [cost(path), state]
+    visited = []
+
+
+    while True:
+
+        curr_state, curr_path = queue.pop()
+
+        if is_solved(curr_state, params):
+            return curr_path
+
+
+        if type(curr_path) != str:
+            pdb.set_trace()
+        children = [[curr_path + move, simulate(solved_state, curr_path + move)] for move in priority]
+
+
+        for child in children:
+            if child not in visited:
+                visited.append(child)
+                queue.insert(0, [child[1], child[0]])
+
+        queue =  sorted(queue.copy(), key=lambda pair : pair[0], reverse=True)
+
 
     print(f'searched {cnt} paths')
     print('solution:', '')
@@ -127,12 +159,13 @@ def cost(node, state):
     Let h(node) be the average number of incorrect square colors on the cube. For h(node)=0, all colors will match the center color of that face, which never moves.
     '''
     # ***MODIFY CODE HERE*** (1 line)
-    g = len(state)
+    g = len(node)
+    h = 0
 
     for i in range(6):
-        center_color = node[(i * 9) + 4]
+        center_color = state[(i * 9) + 4]
         for j in range(9):
-            if node[(i * 9) + j] != center_color:
+            if state[(i * 9) + j] != center_color:
                 h += 1
 
     h /= 6
@@ -257,7 +290,23 @@ def simulate(state, node):
     s = state.copy()  # copy the state so that we don't change the actual cube!
     # ***ENTER CODE HERE***  (4 lines)
 
+    for move in node:
+        if move == move.upper():
+            rotate(s, move, direction="CCW")
+        else:
+            rotate(s, move.upper(), direction="CW")
+
+
     return s
+
+def is_solved(state, params):
+
+    solved = []
+    for i in range(6):
+        solved += [i] * params['n'] ** 2
+
+    return state == solved
+
 
 def read_file(file_name):
 
