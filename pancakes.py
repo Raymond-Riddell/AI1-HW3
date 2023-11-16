@@ -237,7 +237,7 @@ def simulate(stack, path, gui):
     for action in path:
         stack = flip_stack(stack, int(action))
         draw_pancakes(gui, stack, len(stack))
-        time.sleep(0.1)
+        time.sleep(0.01)
 
     return fakestack
 
