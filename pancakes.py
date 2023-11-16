@@ -16,6 +16,7 @@ parser.add_argument('-n', '--num', metavar='pancakes', type=int, help="number of
 parser.add_argument('--seed', type=int, help="seed for randomly arranging pancakes initially")
 
 def main(args):
+
     # Parse inputs
     n = args.num  # number of pancakes
     stack = list(range(n))
@@ -27,6 +28,7 @@ def main(args):
 
     # Use the graphical user interface
     while True:
+        # get user input and perform desired action
         key = gui.checkKey()
         if key:
             if key == "Escape":  # quit the program
@@ -52,7 +54,6 @@ def guisetup(stack):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** (10 lines)
-
     draw_pancakes(gui, stack, n)
 
     # Add text objects for instructions and status updates
@@ -70,34 +71,32 @@ def guisetup(stack):
     return gui
 
 def flip(gui, stack, p, update_gui=True):
-    '''Flip p pancakes in an ordered stack.'''
+    '''Flip p pancakes in an ordered stack, and optionally updates the GUI'''
+
     print("Flipping", p, "pancakes" if p > 1 else "pancake")
 
+    # flip the backend representation of the stack of pancakes
     stack = flip_stack(stack, p)
+
+    # update the gui to reflect the changes made to the inputed stack of pancakes
     if update_gui:
         draw_pancakes(gui, stack, len(stack))
+
     return stack
 
 def flip_stack(stack, p):
-    temp = []
+    '''Flip p pancakes in an ordered stack.'''
+    queue = []
 
     stack_copy = stack.copy()
-    for i in range(p):
-        temp.insert(0, stack_copy.pop(0))
+    for _ in range(p):
+        queue.insert(0, stack_copy.pop(0))
 
-    for i in range(len(temp)):
-        stack_copy.insert(0, temp.pop())
+    for _ in range(len(queue)):
+        stack_copy.insert(0, queue.pop())
     return stack_copy
 
 
-    # Move pancakes around in the GUI
-    # ***ENTER CODE HERE*** (5 lines)
-    # thickness = pancakes[0].config['width']  # may be a helpful variable :)
-
-    # Update the stack (which is separate from the graphics objects)
-    # ***ENTER CODE HERE*** (2 lines)
-
-    return stack
 
 def calc_cost(stack):
     '''Compute the cost h(stack) for a given stack of pancakes.
@@ -167,7 +166,7 @@ def search(state, path, cost, count):
                 node_id = parent_id
                 node = parent
 
-            return path, cnt
+            return path[::-1], cnt
 
         moves = [a for a in range(2, len(node) + 1)]
 
@@ -206,10 +205,11 @@ def simulate(stack, path):
     return fakestack
 
 def draw_pancakes(gui, stack, n):
+    '''Takes in a stack of the pancakes(integers) and draws them on the inputed gui'''
 
 
     # Draw pancakes
-    # ***ENTER CODE HERE*** (10 lines)
+    # ***ENTER CODE HERE*** ("10" lines) (I feel like we saved code duplication in the long run)
     cmap = cm.get_cmap('YlOrBr', n + 1)
     colors = [cmap.__call__(i) for i in range(n)]
     old_lines = [obj for obj in gui.items if type(obj) == Line]
@@ -219,32 +219,38 @@ def draw_pancakes(gui, stack, n):
     thickness = 12  # thickness of each pancake, in pixels
     margin = 40
     wid = margin * 2 + 30 * max(n + 1, 9)  # each successive pancake gets 30 px wider
-    hei = margin * 2 + n * thickness  # top/bottom margins of 40 px + 12 px per pancake
+    mid = wid // 2 # midpoint of board
+
+    # this is an iterator that describes how many pixes from the center each pancake will successively occupy
     pan_x_coefficient = 15 
-    pancake_list = [[x, None] for x in range(n)]
+
+    # a map of integers representing the ith pancake as the keys, and the line
+    # object associated with that "id" for each value 
+    pancake_map = dict(zip([x for x in range(n)], [None]*n)) # None is a place holder until we add objects
+
+    # for every pancake that needs to be drawn...
     for pan in range(n):
 
-        # find midpoint of board
-        mid = wid // 2
-
-        # find x components 
+        # the line that needs to be drawn has x and y componends for each point 
+        # since the line is horizontal, the y components will be the same for each Point
+        # similarly, the x components will be the same, however they will be in 
+        # opposite directions from the center
         x_comp = pan_x_coefficient + 15
         pan_x_coefficient += 15
 
-        # make line object (the actual pancake)
+        # make line object associated with the given number
         pancake = Line(Point(-x_comp + mid, 0), Point(x_comp + mid, 0))
         pancake.setFill(color_rgb(*[int(a*255) for a in colors[pan][:-1]]))
         pancake.setWidth(thickness)
-        pancake_list[pan][1] = pancake
-
-    pancake_map = dict()
-    for tup in pancake_list:
-        pancake_map[tup[0]] = tup[1]
+        
+        # update our dict with the line object just made so that we 
+        # can update y components later
+        pancake_map[pan] = pancake
 
     pan_start = 0
     for pan in stack:
         pan_start += 12
-        y_comp = pan_start + 40
+        y_comp = pan_start + 40 # 40 here is the offset from top
         pancake = pancake_map[pan]
         pancake.move(0, y_comp)
         pancake.draw(gui)
@@ -264,13 +270,6 @@ def find_move(state1, state2):
 
     return len(state1) - count_same
         
-
-
-def make_path(backpointers, goal_state):
-    
-    path = ""
-
-    # find parent of goal state 
 
 
 if __name__ == "__main__":
