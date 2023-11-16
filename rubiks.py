@@ -30,17 +30,23 @@ def main(args):
     # ***MODIFY CODE HERE*** (7 lines)
     current_state = []
     color_idx = 0
-    colors_list = list(read_file(args.state)[0])
-    for i in range(6):
-        side = [i] * params['n'] ** 2
 
-        for j in range(len(side)):
-            side[j] = colors_list[color_idx]
-            color_idx += 1
-        
-        for e in side:
-            current_state.append(int(e))
-    pdb.set_trace()
+    if args.state:
+        colors_list = list(read_file(args.state)[0])
+        for i in range(6):
+            side = [i] * params['n'] ** 2
+
+            for j in range(len(side)):
+                side[j] = colors_list[color_idx]
+                color_idx += 1
+            
+            for e in side:
+                current_state.append(int(e))
+    else:
+
+        current_state = []
+        for i in range(6):
+            current_state += [i] * params['n'] ** 2
 
     # ***DO NOT MODIFY THE FOLLOWING 2 LINES***
     initial_state = current_state.copy()  # for resetting the cube
@@ -120,12 +126,16 @@ def cost(node, state):
     Let g(node) be the number of moves it took to get to the state.
     Let h(node) be the average number of incorrect square colors on the cube. For h(node)=0, all colors will match the center color of that face, which never moves.
     '''
-
     # ***MODIFY CODE HERE*** (1 line)
-    g = 0
+    g = len(state)
 
-    # ***MODIFY CODE HERE*** (7 lines)
-    h = 0
+    for i in range(6):
+        center_color = node[(i * 9) + 4]
+        for j in range(9):
+            if node[(i * 9) + j] != center_color:
+                h += 1
+
+    h /= 6
 
     return g + h
 
