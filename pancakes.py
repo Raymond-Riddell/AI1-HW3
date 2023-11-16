@@ -42,6 +42,7 @@ def main(args):
             elif key == 'g':  # run greedy best-first search
                 path = gbfs(gui, stack)
                 simulate(stack, path, gui)
+                stack = [ i for i in range(len(stack))]
             elif key in [str(i) for i in range(1, n + 1)]:  # manually flip some of the pancakes
                 stack = flip(gui, stack, int(key))
 
@@ -233,13 +234,12 @@ def search(state):
 
 def simulate(stack, path, gui):
     '''Simulate the flipping of pancakes to determine the resulting stack.'''
-    fakestack = stack.copy()  # make a copy so we don't actually change the real stack
     for action in path:
         stack = flip_stack(stack, int(action))
         draw_pancakes(gui, stack, len(stack))
         time.sleep(0.01)
 
-    return fakestack
+    # return stack
 
 def draw_pancakes(gui, stack, n):
     '''Takes in a stack of the pancakes(integers) and draws them on the inputed gui'''
