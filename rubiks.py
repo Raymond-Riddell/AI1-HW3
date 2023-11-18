@@ -108,7 +108,7 @@ def main(args):
 
             elif key == 'a':
                 # Solve the cube using A* search
-                path = astar(current_state, params, solved_state)
+                path = astar(current_state, params)
                 print(path)
 
             elif key == 'h':
@@ -117,41 +117,46 @@ def main(args):
 
     gui.close()
 
-def astar(state, params, solved_state, verbose=False):
+def astar(state, params, verbose=False):
     '''Run A* search on the cube based on its current state and return the solution path.'''
     print('Running A* search...')
     # ***ENTER CODE HERE*** (20-25 lines)
     cnt = 0
-
+    
+    initial_state = state.copy()
     priority = "udlrbfUDLRBF"
-    starting_node = priority[0]
-    queue = [[cost(starting_node, simulate(solved_state, starting_node)), starting_node]] # [cost(path), state]
+    starting_node = priority[0] # path
+    queue = [[cost(starting_node, simulate(initial_state, starting_node)), starting_node]] # [cost(path), state]
     visited = []
+    final_path = ""
 
 
     while True:
 
-        curr_state, curr_path = queue.pop()
+        curr_cost, curr_path = queue.pop()
+
+        curr_state = simulate(initial_state, curr_path)
 
         if is_solved(curr_state, params):
-            return curr_path
-
+            final_path = curr_path
+            break
 
         if type(curr_path) != str:
             pdb.set_trace()
-        children = [[curr_path + move, simulate(solved_state, curr_path + move)] for move in priority]
 
+        children = [[cost(curr_path + move, simulate(initial_state, curr_path + move)), curr_path + move] for move in priority]
 
         for child in children:
             if child not in visited:
                 visited.append(child)
-                queue.insert(0, [child[1], child[0]])
+                queue.insert(0, child)
 
         queue =  sorted(queue.copy(), key=lambda pair : pair[0], reverse=True)
 
 
     print(f'searched {cnt} paths')
     print('solution:', '')
+    return final_path
 
 def cost(node, state):
     '''Compute the cost g(node)+h(node) for a given set of moves (node) leading to a cube state.
