@@ -24,12 +24,6 @@ def main(args):
     # Make the graphical user interface
     gui = guisetup(stack)
 
-    if args.seed is not None:  # randomly shuffle the pancakes initially
-        random.seed(args.seed)
-        random.shuffle(stack)
-        path = search(stack)[0]
-        simulate(stack, path[::-1], gui)
-        path = ""
 
     # Use the graphical user interface
     while True:
@@ -41,19 +35,9 @@ def main(args):
             elif key == 'd':  # debug the program
                 pdb.set_trace()
             elif key == 'g':  # run greedy best-first search
-                path = ""
-                path = gbfs(gui, stack)
-            elif key == 'a':
-
-                flag = path != ""
-
-                simulate(stack, path, gui)
-
-                if flag:
-                    # just reset everything after solving the requested game state
-                    stack = [ i for i in range(len(stack))]
-                    draw_pancakes(gui, stack, len(stack))
-
+                path, cnt = gbfs(gui, stack)
+                print(f'searched {cnt} paths')
+                print(f'solution: {path}')
             elif key in [str(i) for i in range(1, n + 1)]:  # manually flip some of the pancakes
                 stack = flip(gui, stack, int(key))
 
@@ -74,7 +58,7 @@ def guisetup(stack):
     draw_pancakes(gui, stack, n)
 
     # Add text objects for instructions and status updates
-    instructions = Text(Point(10, hei - 12), "Press a # to flip pancakes, 'g' to run GBFS (press 'a' to automatically solve), Escape to quit")
+    instructions = Text(Point(10, hei - 12), "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit")
     instructions._reconfig("anchor", "w")
     instructions.setSize(8)
     instructions.draw(gui)
@@ -165,10 +149,8 @@ def gbfs(gui, stack):
     path, cnt  = search(stack)
     
 
-    print(f'searched {cnt} paths')
-    print(f'solution: {path}')
-    status.setText("...search is complete (press 'a' to automatically solve)")
-    return path
+    status.setText("...search is complete")
+    return path, cnt
 
 
 def search(state):
