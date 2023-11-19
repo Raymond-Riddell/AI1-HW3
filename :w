@@ -29,7 +29,6 @@ def main(args):
         random.shuffle(stack)
         path = search(stack)[0]
         simulate(stack, path[::-1], gui)
-        path = ""
 
     # Use the graphical user interface
     while True:
@@ -41,19 +40,13 @@ def main(args):
             elif key == 'd':  # debug the program
                 pdb.set_trace()
             elif key == 'g':  # run greedy best-first search
-                path = ""
                 path = gbfs(gui, stack)
             elif key == 'a':
-
-                flag = path != ""
-
+                pdb.set_trace()
                 simulate(stack, path, gui)
-
-                if flag:
-                    # just reset everything after solving the requested game state
-                    stack = [ i for i in range(len(stack))]
-                    draw_pancakes(gui, stack, len(stack))
-
+                # just reset everything after solving the requested game state
+                stack = [ i for i in range(len(stack))]
+                draw_pancakes(gui, stack, len(stack))
             elif key in [str(i) for i in range(1, n + 1)]:  # manually flip some of the pancakes
                 stack = flip(gui, stack, int(key))
 

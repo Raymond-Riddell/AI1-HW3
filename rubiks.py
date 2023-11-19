@@ -29,28 +29,33 @@ def main(args):
     # cube, but rather the colors of the initial state.
     # ***MODIFY CODE HERE*** (7 lines)
     current_state = []
-    color_idx = 0
 
+    # pointer to current color in the string of colors corresponding to each square in the cube
+    color_idx = 0 
+
+    # if a state is given
     if args.state:
-        colors_list = list(read_file(args.state)[0])
-        for i in range(6):
-            side = [i] * params['n'] ** 2
 
+        # read the colors from the inputted file
+        colors_list = list(read_file(args.state)[0])
+
+        # iterate through each face of the cube
+        for i in range(6):
+            side = [i] * params['n'] ** 2 # create the ith face of the cube
+
+            # recolor the cube by reading the "colors_list" using a pointer
             for j in range(len(side)):
                 side[j] = colors_list[color_idx]
                 color_idx += 1
-            
+            # append each square in the ith face to the current state 
             for e in side:
                 current_state.append(int(e))
+    
+    # in the event that a state is not given
     else:
-
-        current_state = []
+        # color each side of the cube, with each side having a unique color
         for i in range(6):
             current_state += [i] * params['n'] ** 2
-
-    solved_state = []
-    for i in range(6):
-        solved_state += [i] * params['n'] ** 2
 
     # ***DO NOT MODIFY THE FOLLOWING 2 LINES***
     initial_state = current_state.copy()  # for resetting the cube
@@ -108,8 +113,9 @@ def main(args):
 
             elif key == 'a':
                 # Solve the cube using A* search
-                path = astar(current_state, params)
-                print(path)
+                path, cnt = astar(current_state, params)
+                print(f'Paths searched: {cnt - 1}')
+                print(f'final path: {path}')
 
             elif key == 'h':
                 # Print the current heuristic cost
@@ -125,38 +131,47 @@ def astar(state, params, verbose=False):
     
     initial_state = state.copy()
     priority = "udlrbfUDLRBF"
-    starting_node = priority[0] # path
-    queue = [[cost(starting_node, simulate(initial_state, starting_node)), starting_node]] # [cost(path), state]
+    # starting_node = priority[0] # path
+    starting_node = ""
+
+    # nodes here are [cost, path] pairs 
+    queue = [[cost(starting_node, simulate(initial_state, starting_node)), starting_node]] # [cost(path), path]
     visited = []
     final_path = ""
 
 
     while True:
 
+        cnt += 1
+
+        # pop the current node off the queue
         curr_cost, curr_path = queue.pop()
 
+        # generate the current state of the game for the given path
         curr_state = simulate(initial_state, curr_path)
 
+        # check if this state is the solution
         if is_solved(curr_state, params):
             final_path = curr_path
             break
-
-        if type(curr_path) != str:
-            pdb.set_trace()
-
+        
+        # generate all children for the given state of the game
+        # First we generate the cost of the ith child node. Given that the cost function takes in a path, and a game state (list),
+        # we have to use the simulate function to find out what the child state would be if performed the new set of moves, which are defined by 
+        # concatonating the current path with the newest move
         children = [[cost(curr_path + move, simulate(initial_state, curr_path + move)), curr_path + move] for move in priority]
 
+        # check if we have visited each child, and if not, add them to the visited and add them to the queue
         for child in children:
             if child not in visited:
                 visited.append(child)
                 queue.insert(0, child)
 
-        queue =  sorted(queue.copy(), key=lambda pair : pair[0], reverse=True)
+        # sort the queue
+        queue = sorted(queue.copy(), key=lambda pair : pair[0], reverse=True)
 
 
-    print(f'searched {cnt} paths')
-    print('solution:', '')
-    return final_path
+    return final_path, cnt
 
 def cost(node, state):
     '''Compute the cost g(node)+h(node) for a given set of moves (node) leading to a cube state.
@@ -305,16 +320,19 @@ def simulate(state, node):
     return s
 
 def is_solved(state, params):
-
+    '''Takes a cube state as a 1D list, and determines if the cube is solved'''
+    
+    # create a solved cube
     solved = []
     for i in range(6):
         solved += [i] * params['n'] ** 2
-
+    
+    # check the solved state with the given state
     return state == solved
 
 
 def read_file(file_name):
-
+    '''Takes the name of a file, and returns the contents of the file as a list, where each element is a line in the file'''
     with open(file_name, 'r') as file:
         return file.readlines()
 
