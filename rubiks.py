@@ -332,7 +332,7 @@ def is_solved(state, params):
 
 
 def read_file(file_name):
-    '''Takes the name of a file, and returns the contents of the file as a list, where each element is a line in the file'''
+    ''''''
     with open(file_name, 'r') as file:
         return file.readlines()
 

@@ -1,0 +1,8 @@
+- the colors of the pancakes are slightly darker
+- time.sleep of 0.5 seconds was added to the simulate function so that it is more human readable
+- the final path is now printed to the status text object in addition to printing to the terminal
+- gui displays how many pancakes are flipped when manually pressing numbers
+- Status information regarding the following operations now displays ABOVE the pancake stack
+	- manually flipping pancakes
+	- peforming GBFS
+	- initiating the simulation of the path that GBFS found

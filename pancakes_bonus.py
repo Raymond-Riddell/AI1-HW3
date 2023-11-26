@@ -31,6 +31,16 @@ def main(args):
         simulate(stack, path[::-1], gui)
         path = ""
 
+    # Get graphics objects from GUI
+    objects = gui.items
+    status = None
+    path = ""
+    # since objects will be in random order, we have to iterate to specifically
+    # find the text object we are looking to update
+    for obj in objects:
+        if type(obj) == Text and obj.getText() != "Press a # to flip pancakes, 'g' to run GBFS (press 'a' to automatically solve), Escape to quit":
+            status = obj
+            break
     # Use the graphical user interface
     while True:
         # get user input and perform desired action
@@ -53,9 +63,13 @@ def main(args):
                     # just reset everything after solving the requested game state
                     stack = [ i for i in range(len(stack))]
                     draw_pancakes(gui, stack, len(stack))
+                    
+                status.setText("Pancakes are done sorting!")
+
 
             elif key in [str(i) for i in range(1, n + 1)]:  # manually flip some of the pancakes
                 stack = flip(gui, stack, int(key))
+                status.setText(f"Flipping {key} pancakes")
 
     gui.close()
 
@@ -147,9 +161,10 @@ def gbfs(gui, stack):
     # since objects will be in random order, we have to iterate to specifically
     # find the text object we are looking to update
     for obj in objects:
-        if type(obj) == Text and obj.getText() != "Press a # to flip pancakes, 'g' to run GBFS, Escape to quit":
+        if type(obj) == Text and obj.getText() != "Press a # to flip pancakes, 'g' to run GBFS (press 'a' to automatically solve), Escape to quit":
             status = obj
             break
+
 
     # check if we even need to solve the game
     if stack == [a for a in range(len(stack))]:
@@ -167,7 +182,7 @@ def gbfs(gui, stack):
 
     print(f'searched {cnt} paths')
     print(f'solution: {path}')
-    status.setText("...search is complete (press 'a' to automatically solve)")
+    status.setText("...search is complete (press 'a' to automatically solve)\n Final path: {}".format(path.center(len(path) + 2)))
     return path
 
 
@@ -248,9 +263,8 @@ def simulate(stack, path, gui):
     for action in path:
         stack = flip_stack(stack, int(action))
         draw_pancakes(gui, stack, len(stack))
-        time.sleep(0.01)
+        time.sleep(0.5)
 
-    # return stack
 
 def draw_pancakes(gui, stack, n):
     '''Takes in a stack of the pancakes(integers) and draws them on the inputed gui'''
@@ -258,7 +272,8 @@ def draw_pancakes(gui, stack, n):
 
     # Draw pancakes
     # ***ENTER CODE HERE*** ("10" lines) (I feel like we saved code duplication in the long run)
-    cmap = cm.get_cmap('YlOrBr', n + 1)
+    # cmap = cm.get_cmap('YlOrBr', n + 1)
+    cmap = cm.get_cmap('YlOrBr', n - 0.7)
     colors = [cmap.__call__(i) for i in range(n)]
     old_lines = [obj for obj in gui.items if type(obj) == Line]
     for line in old_lines:
